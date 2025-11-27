@@ -20,7 +20,7 @@ class ComponentSelector: public ftxui::ComponentBase {
   ftxui::Elements nameEntries;
   int selected = 0;
   ftxui::ElementDecorator menuDecorator = ftxui::borderRounded 
-                                          | ftxui::size(ftxui::WIDTH, ftxui::GREATER_THAN, 20);
+                                          | ftxui::size(ftxui::WIDTH, ftxui::GREATER_THAN, 30);
   ftxui::Component welcome = ftxui::Renderer([]{return getTile(ftxui::Color::White, 160, 60);});
   ftxui::Component *active = &welcome;
   bool inmenu = true;
@@ -40,7 +40,12 @@ class ComponentSelector: public ftxui::ComponentBase {
     afterSelection.at(selected) |= ftxui::inverted;
     auto config = ftxui::FlexboxConfig();
     config.Set(ftxui::FlexboxConfig::JustifyContent::Center);
-    auto menu = ftxui::vbox(afterSelection) | menuDecorator;
+    auto menu = ftxui::vbox({
+        ftxui::vbox(afterSelection),
+        ftxui::filler(),
+        ftxui::separator(),
+        ftxui::hbox({ftxui::text("Quit (q)"), ftxui::filler(), ftxui::separator(), ftxui::filler(), ftxui::text("Select (Enter)")})
+    }) | menuDecorator;
     return ftxui::window(
         ftxui::text("Conplay"),
         ftxui::hbox({
@@ -57,7 +62,7 @@ class ComponentSelector: public ftxui::ComponentBase {
       if (inmenu) {
         ftxui::ScreenInteractive* active_screen = ftxui::ScreenInteractive::Active();
         if (active_screen) {
-          active_screen->ExitLoopClosure();
+          active_screen->ExitLoopClosure()();
         }
       }
       else {
